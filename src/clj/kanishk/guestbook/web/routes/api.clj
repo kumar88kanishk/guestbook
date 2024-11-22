@@ -34,19 +34,15 @@
 
 ;; Routes
 (defn api-routes [_opts]
+  (print _opts)
   [["/swagger.json"
     {:get {:no-doc  true
            :swagger {:info {:title "kanishk.guestbook API"}}
            :handler (swagger/create-swagger-handler)}}]
    ["/health"
     {:get health/healthcheck!}]
-   #_["/guest/create"
-    {:post guest/create}]
-   ["/foo/:bar" {:post (fn [{:keys [path-params query-params body-params]}]
-                         {:status 200
-                          :body   (str "path params: " path-params
-                                       "\nquery params: " query-params
-                                       "\nbody params: " body-params)})}]])
+   ["/guest/save-message" {:post {:parameters {:body {:name string?, :message string?}}
+                                  :handler (partial guest/save-message! _opts)}}]])
 
 (derive :reitit.routes/api :reitit/routes)
 

@@ -6,19 +6,33 @@
    [java.util Date]))
 
 (defn save-message! 
-  [{:keys [query-fn]} {{:strs [name message]} :form-params :as request}]
-  (log/debug "Saving message" name message)
-  (try 
-    (if (or (empty? name) (empty? message))
-      (cond-> (http-response/found "/")
-        (empty? name)
-        (assoc-in [:flash :errors :name] "Name is required")
-        (empty? message)
-        (assoc-in [:flash :erros :name] "Message is required"))
-      (do
-        (query-fn :save-message! {:name name :message message})
-        (http-response/found "/")))
+  [{:keys [query-fn body-params]} {{:strs [_ _]} :form-params :as request}]
+  (log/debug "Saving message" (get-in request [:parameters :body :name]) (get-in request [:parameters :body :message]))
+  (try
+    (let [name (get-in request [:parameters :body :name])
+          message (get-in request [:parameters :body :message])]
+      (if (or (empty? name) (empty? message))
+        (http-response/method-not-allowed
+         {:time     (str (Date. (System/currentTimeMillis)))
+          :up-since (str (Date. (.getStartTime (java.lang.management.ManagementFactory/getRuntimeMXBean))))
+          :app      {:message  (cond (and (empty? name) (empty? message)) "Name and Message are required"
+                                     (empty? name) "Name is required"
+                                     (empty? message) "Message is required")}})
+        (do
+          (let [saved-message (query-fn :save-message! {:name name :message message})]
+            (http-response/ok
+             {:time     (str (Date. (System/currentTimeMillis)))
+              :up-since (str (Date. (.getStartTime (java.lang.management.ManagementFactory/getRuntimeMXBean))))
+              :app      {:message "Message Saved"
+                         :created-message saved-message}}))
+          
+          )))
     (catch Exception e
       (log/error e "Could not save")
-      (-> (http-response/found "/")
+      (-> (http-response/ok
+           {:time     (str (Date. (System/currentTimeMillis)))
+            :up-since (str (Date. (.getStartTime (java.lang.management.ManagementFactory/getRuntimeMXBean))))
+            :app      {:message "Message could not be saved"}}) 
           (assoc :flash {:errors {:unknown (.getMessage e)}})))))
+
+
