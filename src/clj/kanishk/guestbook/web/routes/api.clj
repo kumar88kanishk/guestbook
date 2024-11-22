@@ -42,7 +42,8 @@
    ["/health"
     {:get health/healthcheck!}]
    ["/guest/save-message" {:post {:parameters {:body {:name string?, :message string?}}
-                                  :handler (partial guest/save-message! _opts)}}]])
+                                  :handler (partial guest/save-message! _opts)}}]
+   ["/guest/messages" {:get {:handler (partial guest/get-messages _opts)}}]])
 
 (derive :reitit.routes/api :reitit/routes)
 
