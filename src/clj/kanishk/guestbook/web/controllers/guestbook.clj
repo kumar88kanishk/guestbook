@@ -1,11 +1,11 @@
 (ns kanishk.guestbook.web.controllers.guestbook
-  (:require 
+  (:require
    [ring.util.http-response :as http-response]
    [clojure.tools.logging :as log])
   (:import
    [java.util Date]))
 
-(defn save-message! 
+(defn save-message!
   [{:keys [query-fn body-params]} {{:strs [_ _]} :form-params :as request}]
   (log/debug "Saving message" (get-in request [:parameters :body :name]) (get-in request [:parameters :body :message]))
   (try
@@ -23,23 +23,21 @@
            {:time     (str (Date. (System/currentTimeMillis)))
             :up-since (str (Date. (.getStartTime (java.lang.management.ManagementFactory/getRuntimeMXBean))))
             :app      {:message "Message Saved"
-                       :created-message saved-message}}))
-        
-        ))
+                       :created-message saved-message}}))))
     (catch Exception e
       (log/error e "Could not save")
       (-> (http-response/ok
            {:time     (str (Date. (System/currentTimeMillis)))
             :up-since (str (Date. (.getStartTime (java.lang.management.ManagementFactory/getRuntimeMXBean))))
-            :app      {:message "Message could not be saved"}}) 
+            :app      {:message "Message could not be saved"}})
           (assoc :flash {:errors {:unknown (.getMessage e)}})))))
 
 
-(defn get-messages
+(defn list-messages
   [{:keys [query-fn body-params]} {{:strs [_ _]} :form-params :as request}]
   (log/debug "Saving message" (get-in request [:parameters :body :name]) (get-in request [:parameters :body :message]))
   (try
-    (let [messages (query-fn :get-messages {})]
+    (let [messages (query-fn :list-messages {})]
       (http-response/ok
        {:time     (str (Date. (System/currentTimeMillis)))
         :up-since (str (Date. (.getStartTime (java.lang.management.ManagementFactory/getRuntimeMXBean))))
@@ -51,7 +49,15 @@
       (-> (http-response/ok
            {:time     (str (Date. (System/currentTimeMillis)))
             :up-since (str (Date. (.getStartTime (java.lang.management.ManagementFactory/getRuntimeMXBean))))
-            :app      {:message "Messages could not be listed"}})
-          (assoc :flash {:errors {:unknown (.getMessage e)}})))))
+            :app      {:message "Messages could not be listed"}})))))
+
+(defn get-message
+  [{:keys [query-fn]} request]
+  (log/debug "Get mEssage by id" request (get-in request [:parameters :query :id]))
+  (let [message (query-fn :get-message-by-id {:id (get-in request [:parameters :query :id])})]
+    (http-response/ok
+     {:time (str (Date. (System/currentTimeMillis)))
+      :upsince (str (Date. (.getStartTime (java.lang.management.ManagementFactory/getRuntimeMXBean))))
+      :app {:message message}})))
 
 

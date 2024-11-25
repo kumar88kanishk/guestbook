@@ -39,11 +39,12 @@
     {:get {:no-doc  true
            :swagger {:info {:title "kanishk.guestbook API"}}
            :handler (swagger/create-swagger-handler)}}]
-   ["/health"
-    {:get health/healthcheck!}]
-   ["/guest/save-message" {:post {:parameters {:body {:name string?, :message string?}}
+   ["/health" {:get health/healthcheck!}]
+   ["/guest/message" {:post {:parameters {:body {:name string?, :message string?}}
                                   :handler (partial guest/save-message! _opts)}}]
-   ["/guest/messages" {:get {:handler (partial guest/get-messages _opts)}}]])
+   ["/guest/messages" {:get {:handler (partial guest/list-messages _opts)}}]
+   ["/guest/message/:id" {:get {:parameters {:query {:id number?}}
+                                :handler (partial guest/get-message _opts)}}]])
 
 (derive :reitit.routes/api :reitit/routes)
 
