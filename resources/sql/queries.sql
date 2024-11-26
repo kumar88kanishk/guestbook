@@ -11,3 +11,30 @@ SELECT * FROM guestbook
 -- :name get-message-by-id :? :1
 -- :doc select message by id
 SELECT * from guestbook WHERE id = :id
+
+-- :name update-message :! :n
+-- :doc update message by id
+UPDATE guestbook
+SET name=:name, message=:message
+WHERE id=:id
+
+-- :name create-guest! :! :n
+-- :doc creates a new guest
+INSERT INTO guests
+(username, password)
+VALUES (:username, :password)
+
+
+-- :name list-guests :? :*
+-- :doc selects all available guests
+SELECT * FROM guests
+
+-- :name get-guest-by-id :? :1
+-- :doc select guest by id
+SELECT * from guests WHERE id = :id
+
+-- :name update-guest :! :n
+-- :doc update guest by id
+UPDATE guests
+SET password=:password
+WHERE id=:id

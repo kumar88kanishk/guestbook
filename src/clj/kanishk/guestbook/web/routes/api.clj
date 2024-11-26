@@ -1,7 +1,8 @@
 (ns kanishk.guestbook.web.routes.api
   (:require
    [kanishk.guestbook.web.controllers.health :as health]
-   [kanishk.guestbook.web.controllers.guestbook :as guest]
+   [kanishk.guestbook.web.controllers.guestbook :as guestbook]
+   [kanishk.guestbook.web.controllers.guests :as guests]
    [kanishk.guestbook.web.middleware.exception :as exception]
    [kanishk.guestbook.web.middleware.formats :as formats]
    [integrant.core :as ig]
@@ -41,10 +42,16 @@
            :handler (swagger/create-swagger-handler)}}]
    ["/health" {:get health/healthcheck!}]
    ["/guest/message" {:post {:parameters {:body {:name string?, :message string?}}
-                                  :handler (partial guest/save-message! _opts)}}]
-   ["/guest/messages" {:get {:handler (partial guest/list-messages _opts)}}]
+                                  :handler (partial guestbook/create-message! _opts)}}]
+   ["/guest/messages" {:get {:handler (partial guestbook/get-messages _opts)}}]
    ["/guest/message/:id" {:get {:parameters {:query {:id number?}}
-                                :handler (partial guest/get-message _opts)}}]])
+                                :handler (partial guestbook/get-message _opts)}} 
+    #_{:conflicting true}]
+   ["/guest/update-message/:id" {:put {:parameters {:query {:id number?} :body {:name string? :message string?}}
+                                :handler (partial guestbook/update-message! _opts)}} 
+    #_{:conflicting true}]
+   ["/guest" {:post {:parameters {:body {:username string?, :password string?}}
+                             :handler (partial guests/create-guest! _opts)}}]])
 
 (derive :reitit.routes/api :reitit/routes)
 
