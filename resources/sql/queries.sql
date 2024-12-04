@@ -42,3 +42,7 @@ WHERE id=:id
 -- :name login-guest :? :1
 -- :doc login guest by username & pqassword
 SELECT id from guests WHERE username = :username AND password = :password
+
+-- :name valid-user? :? :1
+-- :doc valid user?
+SELECT COUNT(*) frpm guests where id = :user-id
