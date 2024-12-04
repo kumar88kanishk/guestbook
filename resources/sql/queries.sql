@@ -38,3 +38,7 @@ SELECT * from guests WHERE id = :id
 UPDATE guests
 SET password=:password
 WHERE id=:id
+
+-- :name login-guest :? :1
+-- :doc login guest by username & pqassword
+SELECT id from guests WHERE username = :username AND password = :password

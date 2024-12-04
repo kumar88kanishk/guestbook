@@ -35,7 +35,6 @@
 
 ;; Routes
 (defn api-routes [_opts]
-  (print _opts)
   [["/swagger.json"
     {:get {:no-doc  true
            :swagger {:info {:title "kanishk.guestbook API"}}
@@ -51,7 +50,12 @@
                                 :handler (partial guestbook/update-message! _opts)}} 
     #_{:conflicting true}]
    ["/guest" {:post {:parameters {:body {:username string?, :password string?}}
-                             :handler (partial guests/create-guest! _opts)}}]])
+                             :handler (partial guests/create-guest! _opts)}}]
+   ["/login" {:post {:parameters {:body {:username string?, :password string?}}
+                         :handler (partial guests/set-user! _opts)}}]
+   ["/logout" {:post {:parameters {:body {:user-id string?}}
+                      :handler (partial guests/unset-user! _opts)}}]
+   ["/logged-in" {:get {:handler (partial guests/logged-in? _opts)}}]])
 
 (derive :reitit.routes/api :reitit/routes)
 

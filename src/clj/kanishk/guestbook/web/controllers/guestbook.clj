@@ -22,7 +22,7 @@
          {:time     (str (Date. (System/currentTimeMillis)))
           :up-since (str (Date. (.getStartTime (java.lang.management.ManagementFactory/getRuntimeMXBean))))
           :app      {:message "Message Saved"
-                     :created-message saved-message}})))))
+                     :data saved-message}})))))
 
 
 (defn get-messages
@@ -33,9 +33,7 @@
      {:time     (str (Date. (System/currentTimeMillis)))
       :up-since (str (Date. (.getStartTime (java.lang.management.ManagementFactory/getRuntimeMXBean))))
       :app      {:message "Messages"
-                 :data messages}}))
-
-  )
+                 :data messages}})))
 
 (defn get-message
   [{:keys [query-fn]} request]
@@ -44,7 +42,7 @@
     (http-response/ok
      {:time (str (Date. (System/currentTimeMillis)))
       :upsince (str (Date. (.getStartTime (java.lang.management.ManagementFactory/getRuntimeMXBean))))
-      :app {:message message}})))
+      :app {:message "Message Found" :data message}})))
 
 
 (defn update-message!
@@ -57,6 +55,7 @@
     (http-response/ok
      {:time (str (Date. (System/currentTimeMillis)))
       :upsince (str (Date. (.getStartTime (java.lang.management.ManagementFactory/getRuntimeMXBean))))
-      :app {:message updated-message}})))
+      :app {:message "Update Message"
+            :data updated-message}})))
 
 
